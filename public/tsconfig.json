@@ -19,3 +19,7 @@
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }
+rm public/tsconfig.json
+git add -u
+git commit -m "Remove duplicate tsconfig.json from public"
+git push
