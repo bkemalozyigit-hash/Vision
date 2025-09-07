@@ -1,3 +1,6 @@
 import React from "react";
-import ShopLanding from "../src/components/ShopLanding";
-export default function Home() { return <ShopLanding />; }
+import ShopLanding from "src/components/ShopLanding"; // baseUrl: "." olduğu için direkt src'den başlıyoruz
+
+export default function Home() {
+  return <ShopLanding />;
+}
