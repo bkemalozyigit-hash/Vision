@@ -1,8 +1,8 @@
-import type { AppProps } from "next/app";
+import type { AppProps as NextAppProps } from "next/app"; // <-- alias
 import "../styles.css";
 import Head from "next/head";
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: NextAppProps) {
   return (
     <>
       <Head>
@@ -12,9 +12,4 @@ export default function App({ Component, pageProps }: AppProps) {
       <Component {...pageProps} />
     </>
   );
-}tsx
-import type { AppProps } from "next/app";
-import "../styles.css";
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
 }
