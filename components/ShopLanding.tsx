@@ -1,3 +1,4 @@
+import CheckoutSheet from "./CheckoutSheet";
 import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart, Gift, Shirt, Hoodie, Package } from "lucide-react";
@@ -137,37 +138,34 @@ const Hero: React.FC = () => (
     </div>
   </section>
 );
-
-function CheckoutButton({ sku, payload }: { sku?: string; payload: any }) {
-  const disabled = !sku;
-  const handleClick = async () => {
-    const body = { ...payload, sku };
-    try {
-      const res = await fetch('/api/gooten/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (res.ok) {
-        const data = await res.json();
-        if (data?.paymentUrl) window.location.href = data.paymentUrl;
-        else alert('Sipariş alındı, e-posta ile onay gönderilecek.');
-      } else {
-        window.location.href = `mailto:hello@visionart.com?subject=Gooten%20Sipari%C5%9F&body=${encodeURIComponent(JSON.stringify(body, null, 2))}`;
-      }
-    } catch {
-      window.location.href = `mailto:hello@visionart.com?subject=Gooten%20Sipari%C5%9F&body=${encodeURIComponent(JSON.stringify(body, null, 2))}`;
-    }
-  };
-  return (
-    <button onClick={handleClick} disabled={disabled} className="btn btn-primary" style={{ width: "100%", opacity: disabled ? .6 : 1 }}>
-      <ShoppingCart size={16} /> {disabled ? 'Seçim Yapın' : 'Ödemeye Geç (Gooten)'}
-    </button>
-  );
-}
+<button
+  onClick={() => setOpenSheet(true)}
+  disabled={!sku}
+  className="btn btn-primary"
+  style={{ width: "100%", opacity: !sku ? 0.6 : 1 }}
+>
+  {!sku ? "Seçim Yapın" : "Ödemeye Geç"}
+</button>
+<CheckoutSheet
+  open={openSheet}
+  onClose={() => setOpenSheet(false)}
+  sku={sku}
+  payload={{
+    productId: p.id,
+    title: p.title,
+    priceTRY: p.priceTRY,
+    priceUSD: p.priceUSD,
+    size,
+    color
+  }}
+/>
 
 const ProductCard: React.FC<{ p: Product }> = ({ p }) => {
   // Varsayılan seçimleri yap → buton sayfa açılır açılmaz aktif olsun
   const [size, setSize] = useState<string>(p.sizes?.[0] || "");
   const [color, setColor] = useState<string>(p.colors?.[0] || "");
   const [variant, setVariant] = useState<string>(p.variants?.[0]?.sku || "");
-
+  const [openSheet, setOpenSheet] = useState(false);
   const sku = useMemo(() => {
     if (p.variants && p.variants.length) return variant;
     if (p.sizes && p.colors) return GOOTEN_SKUS[p.id]?.[`${color}-${size}`];
