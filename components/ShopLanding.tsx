@@ -108,38 +108,48 @@ const tl = (v?: number) =>
   v != null ? new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(v) : null;
 const usd = (v?: number) => (v != null ? `$${v.toFixed(2)}` : null);
 
-const Nav: React.FC = () => (
-  <header style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(255,255,255,.9)", borderBottom: "1px solid #eee", backdropFilter: "blur(6px)" }}>
-    <div className="container" style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-      <a href="#" style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 800, color: BRAND_GREEN }}>
-        <img src="/vision.png" alt="Vision Logo" style={{ height: 32 }} />
-        Vision
-      </a>
-      <nav style={{ display: "none" }} />
-      <button className="btn">Sepet</button>
-    </div>
-  </header>
-);
+ const BRAND_GREEN = "#9AC72C";
+ const BRAND_GREY = "#71797E";
+@@
+-const Nav: React.FC = () => (
+-  <header style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(255,255,255,.9)", borderBottom: "1px solid #eee", backdropFilter: "blur(6px)" }}>
++const Nav: React.FC = () => (
++  <header style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(255,255,255,.85)", borderBottom: "1px solid #e5e7eb", backdropFilter: "blur(8px)" }}>
+     <div className="container" style={{ height: 72, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+       <a href="#" style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 800, color: BRAND_GREEN }}>
+-        <img src="/vision.png" alt="Vision Logo" style={{ height: 32 }} />
+-        Vision
++        <img src="/vision.png" alt="Vision Logo" style={{ height: 48, filter: "drop-shadow(0 1px 0 rgba(0,0,0,.15))" }} />
++        <span style={{ fontSize: 22, marginLeft: 2 }}>Vision</span>
+       </a>
+       <nav style={{ display: "none" }} />
+       <button className="btn">Sepet</button>
+     </div>
+   </header>
+ );
 
-const Hero: React.FC = () => (
-  <section style={{ background: `linear-gradient(135deg, ${BRAND_GREEN}22, white, ${BRAND_GREY}22)` }}>
-    <div className="container" style={{ padding: "64px 0", display: "grid", gap: 24 }}>
-      <div>
-        <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} style={{ fontSize: 42, fontWeight: 900, color: BRAND_GREEN }}>
-          Vision
-        </motion.h1>
-        <p style={{ color: "#333", maxWidth: 640, marginTop: 12 }}>
-          TR ve Avrupa için limitli koleksiyon: T-Shirt, Sleeve Hoodie, Tapestry ve Canvas. Beden seçenekleri XS–XXL.
-          Kargo: TR 1–3 iş günü, EU 3–7 iş günü.
-        </p>
-        <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-          <a href="#shop" className="btn btn-primary">Ürünleri Gör</a>
-          <a href="#custom" className="btn btn-ghost" style={{ textDecoration: "none" }}>Custom Gift Başlat</a>
-        </div>
-      </div>
-    </div>
-  </section>
-);
+-const Hero: React.FC = () => (
+-  <section style={{ background: `linear-gradient(135deg, ${BRAND_GREEN}22, white, ${BRAND_GREY}22)` }}>
++const Hero: React.FC = () => (
++  <section className="hero" style={{ background: `linear-gradient(135deg, #eef1f5, #ffffff 30%, #e9edf2)` }}>
+     <div className="container" style={{ padding: "72px 0", display: "grid", gap: 24 }}>
+       <div>
+-        <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} style={{ fontSize: 42, fontWeight: 900, color: BRAND_GREEN }}>
+-          Vision
++        <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} style={{ fontSize: 44, fontWeight: 900, color: BRAND_GREEN }}>
++          Vision
+         </motion.h1>
+         <p style={{ color: "#333", maxWidth: 720, marginTop: 12 }}>
+           TR ve Avrupa için limitli koleksiyon: T-Shirt, Sleeve Hoodie, Tapestry ve Canvas. Beden seçenekleri XS–XXL. Kargo: TR 1–3 iş günü, EU 3–7 iş günü.
+         </p>
+         <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+           <a href="#shop" className="btn btn-primary">Ürünleri Gör</a>
+           <a href="#custom" className="btn btn-ghost" style={{ textDecoration: "none" }}>Custom Gift Başlat</a>
+         </div>
+       </div>
+     </div>
+   </section>
+ );
 
 function CheckoutButton({ sku, payload }: { sku?: string; payload: any }) {
   const disabled = !sku;
@@ -176,16 +186,22 @@ function CheckoutButton({ sku, payload }: { sku?: string; payload: any }) {
     </button>
   );
 }
-
-const ProductCard: React.FC<{ p: Product }> = ({ p }) => {
-  const [size, setSize] = useState<string>("");
-  const [color, setColor] = useState<string>(p.colors?.[0] || "");
-  const [variant, setVariant] = useState<string>(p.variants?.[0]?.sku || "");
-  const sku = useMemo(() => {
-    if (p.variants && p.variants.length) return variant;
-    if (p.sizes && p.colors) return GOOTEN_SKUS[p.id]?.[`${color}-${size}`];
-    return undefined;
-  }, [p, size, color, variant]);
+@@
+-const ProductCard: React.FC<{ p: Product }> = ({ p }) => {
+-  const [size, setSize] = useState<string>("");
+-  const [color, setColor] = useState<string>(p.colors?.[0] || "");
+-  const [variant, setVariant] = useState<string>(p.variants?.[0]?.sku || "");
++const ProductCard: React.FC<{ p: Product }> = ({ p }) => {
++  const [size, setSize] = useState<string>(p.sizes?.[0] || "");
++  const [color, setColor] = useState<string>(p.colors?.[0] || "");
++  const [variant, setVariant] = useState<string>(p.variants?.[0]?.sku || "");
++
++  // Eğer seçenekler boşsa dahi SKU’yu mümkün olduğunca üret
+   const sku = useMemo(() => {
+     if (p.variants && p.variants.length) return variant;
+     if (p.sizes && p.colors) return GOOTEN_SKUS[p.id]?.[`${color}-${size}`];
+     return undefined;
+   }, [p, size, color, variant]);
 
   return (
     <div style={{ border: "1px solid #eee", borderRadius: 24, overflow: "hidden", background: "#fff", boxShadow: "0 1px 8px rgba(0,0,0,.06)" }}>
