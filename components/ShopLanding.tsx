@@ -48,7 +48,7 @@ const PRODUCTS: Product[] = [
     title: "Vision Premium",
     priceTRY: 1100,
     priceUSD: 25,
-    image: "/Tee.jpg",
+    image: "/Tee.jpeg",
     category: "tshirt",
     badges: ["Limited"],
     sizes: ["S","M","L","XL"],
