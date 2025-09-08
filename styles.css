@@ -5,7 +5,7 @@ body {
   margin: 0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   color: #111;
-  background: #f2f4f7; /* soft grey tema */
+  background: #f2f4f7; /* gri tema */
 }
 
 button { cursor: pointer; }
@@ -18,24 +18,14 @@ img { display: block; max-width: 100%; }
 .btn-ghost { background: #fff; color: #71797E; border-color: #71797E; }
 .pill { border-radius: 999px; padding: 6px 12px; border: 1px solid rgba(0,0,0,.1); }
 
-/* HERO watermark + degrade */
-.hero {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #eef1f5, #ffffff 30%, #e9edf2);
-}
+/* Hero watermark (arka plan #stayonvision) */
+.hero { position: relative; overflow: hidden; }
 .hero::after {
   content: "#stayonvision";
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  letter-spacing: 2px;
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; letter-spacing: 2px;
   font-size: clamp(72px, 20vw, 220px);
-  color: #111;
-  opacity: .05;           /* silik */
-  pointer-events: none;
-  user-select: none;
+  color: #111; opacity: .05;
+  pointer-events: none; user-select: none;
 }
