@@ -47,12 +47,10 @@ const Nav: React.FC = () => (
 );
 
 const Hero: React.FC = () => (
-  <section
-    style={{
-      position: "relative",
-      background:
-        "linear-gradient(135deg, #f3f4f6 0%, #ffffff 40%, #eef1f4 100%)",
-    }}
+  <section className="hero" style={{ background: "linear-gradient(135deg, #f3f4f6 0%, #ffffff 40%, #eef1f4 100%)" }}>
+    {/* ... */}
+  </section>
+);
   >
     {/* Arka plan watermark */}
     <div
