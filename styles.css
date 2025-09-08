@@ -1,24 +1,15 @@
-/* Minimal reset + font */
-* { box-sizing: border-box; }
-html, body, #__next { height: 100%; }
-body {
-  margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  color: #111;
-  background: #f2f4f7; /* gri tema */
-}
-
-button { cursor: pointer; }
-img { display: block; max-width: 100%; }
-
+/* Layout helpers */
 .container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
-.badge { border-radius: 999px; padding: 2px 8px; font-size: 10px; border: 1px solid rgba(0,0,0,.08); background: rgba(255,255,255,.9); backdrop-filter: blur(4px); }
-.btn { border-radius: 16px; padding: 10px 14px; font-size: 14px; font-weight: 600; border: 1px solid rgba(0,0,0,.08); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+
+/* Buttons */
+.btn { border-radius: 16px; padding: 10px 14px; font-size: 14px; font-weight: 600; border: 1px solid rgba(0,0,0,.08); box-shadow: 0 1px 2px rgba(0,0,0,.06); background: #fff; color: #222; }
+.btn:hover { transform: translateY(-1px); }
 .btn-primary { background: #9AC72C; color: #000; }
 .btn-ghost { background: #fff; color: #71797E; border-color: #71797E; }
+
 .pill { border-radius: 999px; padding: 6px 12px; border: 1px solid rgba(0,0,0,.1); }
 
-/* Hero watermark (arka plan #stayonvision) */
+/* Hero */
 .hero { position: relative; overflow: hidden; }
 .hero::after {
   content: "#stayonvision";
@@ -29,3 +20,16 @@ img { display: block; max-width: 100%; }
   color: #111; opacity: .05;
   pointer-events: none; user-select: none;
 }
+
+/* Checkout Sheet */
+.sheet { position: fixed; inset: 0; display: none; }
+.sheet-open { display: block; }
+.sheet-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.4); }
+.sheet-panel {
+  position: absolute; right: 0; top: 0; height: 100%; width: min(420px, 100%);
+  background: #fff; box-shadow: -12px 0 32px rgba(0,0,0,.18); padding: 20px; display: grid; gap: 16px;
+}
+.sheet-head { display: flex; align-items: center; justify-content: space-between; }
+.btn-icon { border: 1px solid rgba(0,0,0,.08); width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; background: #fff; }
+.sheet-body { display: grid; gap: 10px; }
+.sheet-line { display: flex; justify-content: space-between; font-size: 14px; color: #444; }
