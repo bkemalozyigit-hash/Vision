@@ -1,8 +1,101 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { ShoppingCart, Gift, Shirt, Hoodie, Package } from "lucide-react";
+import CheckoutSheet from "./CheckoutSheet";
 
 const BRAND_GREEN = "#9AC72C";
-const BRAND_GREY = "#71797E";
+
+type CategoryId = "tshirt" | "sleeve" | "hoodie" | "ziphoodie" | "custom";
+type Variant = { label: string; sku: string; priceUSD?: number };
+type Product = {
+  id: string;
+  title: string;
+  priceTRY?: number;
+  priceUSD?: number;
+  image: string;
+  category: CategoryId;
+  badges?: string[];
+  sizes?: Array<"XS" | "S" | "M" | "L" | "XL" | "XXL">;
+  colors?: string[];
+  variants?: Variant[];
+};
+
+const PRODUCTS: Product[] = [
+  {
+    id: "p1",
+    title: "Skateboard Wizard",
+    priceTRY: 1400,
+    priceUSD: 30,
+    image: "/skateboard-wizard.jpg",
+    category: "sleeve",
+    badges: ["Limited"],
+    sizes: ["XS", "S", "M", "L", "XL"],
+    colors: ["Black", "DarkGreyHeather"],
+  },
+  {
+    id: "p2",
+    title: "Vision Premium",
+    priceTRY: 1100,
+    priceUSD: 25,
+    image: "/vision-premium.jpg",
+    category: "tshirt",
+    badges: ["Limited"],
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Black"],
+  },
+  {
+    id: "p3",
+    title: "Psychodelic Woven Blanket – Tapestry",
+    image: "/blanket.jpg",
+    category: "custom",
+    variants: [
+      { label: "52×37", sku: "WovenBlanket_52x37-20250605220322355", priceUSD: 65 },
+      { label: "52×37 (Photo)", sku: "WovenBlanket_52x37_Photo-20250605220322355", priceUSD: 75 },
+      { label: "50×60", sku: "WovenBlanket_50x60-20250605220322355", priceUSD: 85 },
+      { label: "50×60 (Photo)", sku: "WovenBlanket_50x60_Photo-20250605220322355", priceUSD: 95 },
+      { label: "60×80", sku: "WovenBlanket_60x80-20250605220322355", priceUSD: 95 },
+      { label: "60×80 (Photo)", sku: "WovenBlanket_60x80_Photo-20250605220322355", priceUSD: 95 },
+    ],
+  },
+  {
+    id: "p4",
+    title: "Cubic Canvas Portraits",
+    image: "/canvas.jpg",
+    category: "custom",
+    variants: [
+      { label: "8×10 Black Wrap (Thick)", sku: "CanvsWrp-BlkWrp-8x10-Thick-20250611174155878", priceUSD: 40 },
+      { label: "8×10 White Wrap (Thick)", sku: "CanvsWrp-WhtWrp-8x10-Thick-20250611174155878", priceUSD: 50 },
+      { label: "8×10 Image Wrap (Thick)", sku: "CanvsWrp-ImgWrp-8x10-Thick-20250611174155878", priceUSD: 60 },
+      { label: "16×20 Black Wrap (Thick)", sku: "CanvsWrp-BlkWrp-16x20-Thick-20250611174155878", priceUSD: 70 },
+      { label: "16×20 White Wrap (Thick)", sku: "CanvsWrp-WhtWrp-16x20-Thick-20250611174155878", priceUSD: 70 },
+    ],
+  },
+];
+
+const GOOTEN_SKUS: Record<string, Record<string, string>> = {
+  p1: {
+    "Black-XS": "Apparel-DTG-LongSleeveTee-Bella-3501-XS-Black-Unisex-CB-20250906223312834",
+    "Black-S": "Apparel-DTG-LongSleeveTee-Bella-3501-S-Black-Unisex-CB-20250906223312834",
+    "Black-M": "Apparel-DTG-LongSleeveTee-Bella-3501-M-Black-Unisex-CB-20250906223312834",
+    "Black-L": "Apparel-DTG-LongSleeveTee-Bella-3501-L-Black-Unisex-CB-20250906223312834",
+    "Black-XL": "Apparel-DTG-LongSleeveTee-Bella-3501-XL-Black-Unisex-CB-20250906223312834",
+    "DarkGreyHeather-XS": "Apparel-DTG-LongSleeveTee-Bella-3501-XS-DarkGreyHeather-Unisex-CB-20250906223312834",
+    "DarkGreyHeather-S": "Apparel-DTG-LongSleeveTee-Bella-3501-S-DarkGreyHeather-Unisex-CB-20250906223312834",
+    "DarkGreyHeather-M": "Apparel-DTG-LongSleeveTee-Bella-3501-M-DarkGreyHeather-Unisex-CB-20250906223312834",
+    "DarkGreyHeather-L": "Apparel-DTG-LongSleeveTee-Bella-3501-L-DarkGreyHeather-Unisex-CB-20250906223312834",
+    "DarkGreyHeather-XL": "Apparel-DTG-LongSleeveTee-Bella-3501-XL-DarkGreyHeather-Unisex-CB-20250906223312834",
+  },
+  p2: {
+    "Black-S": "Apparel-DTG-Tshirt-CC-1717-S-Black-Unisex-CB-20250906210544442",
+    "Black-M": "Apparel-DTG-Tshirt-CC-1717-M-Black-Unisex-CB-20250906210544442",
+    "Black-L": "Apparel-DTG-Tshirt-CC-1717-L-Black-Unisex-CB-20250906210544442",
+    "Black-XL": "Apparel-DTG-Tshirt-CC-1717-XL-Black-Unisex-CB-20250906210544442",
+  },
+};
+
+const tl = (v?: number) =>
+  v != null ? new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(v) : null;
+const usd = (v?: number) => (v != null ? `$${v.toFixed(2)}` : null);
 
 const Nav: React.FC = () => (
   <header
@@ -10,36 +103,15 @@ const Nav: React.FC = () => (
       position: "sticky",
       top: 0,
       zIndex: 40,
-      background: "rgba(245,247,250,.92)", // daha gri
-      borderBottom: "1px solid #e6e8eb",
-      backdropFilter: "blur(8px)",
+      background: "rgba(255,255,255,.9)",
+      borderBottom: "1px solid #eee",
+      backdropFilter: "blur(6px)",
     }}
   >
-    <div
-      className="container"
-      style={{
-        height: 72,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
-      <a
-        href="#"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          fontWeight: 800,
-          color: BRAND_GREEN,
-        }}
-      >
-        <img
-          src="/vision.png"
-          alt="Vision Logo"
-          style={{ height: 48, objectFit: "contain" }}
-        />
-        <span style={{ fontSize: 20, lineHeight: 1 }}>Vision</span>
+    <div className="container" style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <a href="#" style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 800, color: BRAND_GREEN }}>
+        <img src="/vision.png" alt="Vision Logo" style={{ height: 36 }} />
+        Vision
       </a>
       <button className="btn">Sepet</button>
     </div>
@@ -47,79 +119,166 @@ const Nav: React.FC = () => (
 );
 
 const Hero: React.FC = () => (
-  <section className="hero" style={{ background: "linear-gradient(135deg, #f3f4f6 0%, #ffffff 40%, #eef1f4 100%)" }}>
-    {/* ... */}
-  </section>
-);
+  <section
+    className="hero"
+    style={{
+      position: "relative",
+      background: "linear-gradient(135deg, #f3f4f6 0%, #ffffff 40%, #eef1f4 100%)",
+    }}
   >
-    {/* Arka plan watermark */}
-    <div
-      aria-hidden
-      style={{
-        position: "absolute",
-        inset: 0,
-        display: "grid",
-        placeItems: "center",
-        pointerEvents: "none",
-      }}
-    >
-      <div
-        style={{
-          fontWeight: 900,
-          letterSpacing: -1,
-          fontSize: "clamp(64px, 12vw, 220px)",
-          color: BRAND_GREY,
-          opacity: 0.08,
-          transform: "rotate(-8deg) translateY(-6%)",
-          userSelect: "none",
-          lineHeight: 1,
-          whiteSpace: "nowrap",
-        }}
-      >
-        #stayonvision
-      </div>
-    </div>
-
-    <div
-      className="container"
-      style={{ padding: "72px 0", display: "grid", gap: 24 }}
-    >
-      <div style={{ position: "relative", zIndex: 1 }}>
+    <div className="container" style={{ padding: "64px 0", display: "grid", gap: 24 }}>
+      <div>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          style={{ fontSize: 56, fontWeight: 900, color: BRAND_GREEN }}
+          style={{ fontSize: 56, lineHeight: 1.05, fontWeight: 900, color: BRAND_GREEN, margin: 0 }}
         >
           Vision
         </motion.h1>
-        <p style={{ color: "#2a2f33", maxWidth: 720, marginTop: 12 }}>
-          TR ve Avrupa için limitli koleksiyon: T-Shirt, Sleeve Hoodie, Tapestry
-          ve Canvas. Beden seçenekleri XS–XXL. Kargo: TR 1–3 iş günü, EU 3–7 iş
-          günü.
+        <p style={{ color: "#333", maxWidth: 720, marginTop: 12 }}>
+          TR ve Avrupa için limitli koleksiyon: T-Shirt, Sleeve Hoodie, Tapestry ve Canvas.
+          Beden seçenekleri XS–XXL. Kargo: TR 1–3 iş günü, EU 3–7 iş günü.
         </p>
         <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
           <a href="#shop" className="btn btn-primary">
             Ürünleri Gör
           </a>
-          <a
-            href="#custom"
-            className="btn btn-ghost"
-            style={{ textDecoration: "none" }}
-          >
+          <a href="#custom" className="btn btn-ghost" style={{ textDecoration: "none" }}>
             Custom Gift Başlat
           </a>
         </div>
       </div>
     </div>
+
+    {/* Watermark (arka plan) */}
+    <div
+      aria-hidden
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontWeight: 900,
+        letterSpacing: 2,
+        fontSize: "clamp(72px, 20vw, 220px)",
+        color: "#111",
+        opacity: 0.05,
+        pointerEvents: "none",
+        userSelect: "none",
+      }}
+    >
+      #stayonvision
+    </div>
   </section>
 );
 
-export default function ShopLanding() {
+const ProductCard: React.FC<{ p: Product }> = ({ p }) => {
+  const [size, setSize] = useState<string>(p.sizes?.[0] || "");
+  const [color, setColor] = useState<string>(p.colors?.[0] || "");
+  const [variant, setVariant] = useState<string>(p.variants?.[0]?.sku || "");
+  const [openSheet, setOpenSheet] = useState(false);
+
+  const sku = useMemo(() => {
+    if (p.variants && p.variants.length) return variant;
+    if (p.sizes && p.colors) return GOOTEN_SKUS[p.id]?.[`${color}-${size}`];
+    return undefined;
+  }, [p, size, color, variant]);
+
   return (
-    <>
+    <div style={{ border: "1px solid #eee", borderRadius: 24, overflow: "hidden", background: "#fff", boxShadow: "0 1px 8px rgba(0,0,0,.06)" }}>
+      <div style={{ aspectRatio: "4/5", overflow: "hidden" }}>
+        <img src={p.image} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      </div>
+      <div style={{ padding: 16 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>{p.title}</h3>
+          <div style={{ textAlign: "right" }}>
+            {p.priceTRY != null && <div style={{ color: BRAND_GREEN, fontWeight: 700 }}>{tl(p.priceTRY)}</div>}
+            {p.priceUSD != null && <div style={{ color: "#666", fontSize: 12 }}>{usd(p.priceUSD)}</div>}
+          </div>
+        </div>
+
+        {p.sizes && (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+            {p.sizes.map((s) => (
+              <button key={s} onClick={() => setSize(s)} className="pill" style={{ background: size === s ? "#000" : "#fff", color: size === s ? "#fff" : "#000" }}>
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {p.colors && (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+            {p.colors.map((c) => (
+              <button key={c} onClick={() => setColor(c)} className="pill" style={{ background: color === c ? "#000" : "#fff", color: color === c ? "#fff" : "#000" }}>
+                {c}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {p.variants && p.variants.length > 0 && (
+          <select value={variant} onChange={(e) => setVariant(e.target.value)} style={{ width: "100%", padding: "10px 12px", borderRadius: 12, border: "1px solid #ddd", marginTop: 10 }}>
+            {p.variants.map((v) => (
+              <option key={v.sku} value={v.sku}>
+                {v.label} {v.priceUSD ? `– $${v.priceUSD.toFixed(2)}` : ""}
+              </option>
+            ))}
+          </select>
+        )}
+
+        <button
+          onClick={() => setOpenSheet(true)}
+          disabled={!sku}
+          className="btn btn-primary"
+          style={{ width: "100%", opacity: !sku ? 0.6 : 1, marginTop: 12 }}
+          title={!sku ? "Seçimi tamamlayın" : "Gooten ile ödemeye geç"}
+        >
+          <ShoppingCart size={16} /> {sku ? "Ödemeye Geç" : "Seçim Yapın"}
+        </button>
+      </div>
+
+      <CheckoutSheet
+        open={openSheet}
+        onClose={() => setOpenSheet(false)}
+        sku={sku}
+        title={p.title}
+        payload={{ productId: p.id, priceTRY: p.priceTRY, priceUSD: p.priceUSD, size, color }}
+      />
+    </div>
+  );
+};
+
+export default function ShopLanding() {
+  const [active] = useState<"all" | CategoryId>("all");
+  const filtered = useMemo(() => (active === "all" ? PRODUCTS : PRODUCTS.filter((p) => p.category === active)), [active]);
+  return (
+    <div>
       <Nav />
       <Hero />
-    </>
+      <section id="shop" className="container" style={{ padding: "40px 0" }}>
+        <h2 style={{ fontSize: 28, fontWeight: 900, color: BRAND_GREEN, marginBottom: 16 }}>Kategoriler</h2>
+        <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
+          {filtered.map((p) => (
+            <ProductCard key={p.id} p={p} />
+          ))}
+        </div>
+      </section>
+      <footer style={{ borderTop: "1px solid #eee", marginTop: 40, background: "#fff" }}>
+        <div className="container" style={{ display: "grid", gap: 24, padding: "24px 0" }}>
+          <div>
+            <div style={{ fontWeight: 700, color: BRAND_GREEN }}>Vision Art Collection</div>
+            <p style={{ color: "#555", margin: "8px 0 0" }}>Kaliteli baskı, hızlı teslimat, %100 memnuniyet.</p>
+            <p style={{ color: "#555", margin: "6px 0 0" }}>Kargo: TR 1–3 iş günü shipped • EU 3–7 iş günü shipped</p>
+          </div>
+        </div>
+        <div style={{ textAlign: "center", fontSize: 12, color: "#888", padding: "12px 0" }}>
+          © {new Date().getFullYear()} Vision. Tüm hakları saklıdır.
+        </div>
+      </footer>
+    </div>
   );
 }
